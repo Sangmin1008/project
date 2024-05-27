@@ -61,7 +61,7 @@ class SubActivity : AppCompatActivity() {
 
         logoutButton.setOnClickListener {
             auth.signOut()
-
+            Profile.myName = null
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
             finish()
@@ -80,7 +80,7 @@ class SubActivity : AppCompatActivity() {
                         .addOnSuccessListener { querySnapshot->
                             val myName: String = querySnapshot.documents[0].getString("name").toString()
                             if (myName != friendName) {
-                                searchFriend(friendName)
+                                searchFriend(friendName, myName)
                             } else {
                                 Toast.makeText(this, "자기 자신의 이름은 입력할 수 없습니다.", Toast.LENGTH_SHORT).show()
                             }
@@ -93,7 +93,7 @@ class SubActivity : AppCompatActivity() {
         }
     }
 
-    private fun searchFriend(friendName: String) {
+    private fun searchFriend(friendName: String, myName: String) {
         db.collection("user")
             .whereEqualTo("name", friendName)
             .get()
@@ -106,6 +106,7 @@ class SubActivity : AppCompatActivity() {
                     val intent = Intent(this, ChatActivity::class.java)
                     intent.putExtra("friendName", friendName)
                     intent.putExtra("friendUID", friendUID)
+                    intent.putExtra("myName", myName)
                     startActivity(intent)
                 }
             }

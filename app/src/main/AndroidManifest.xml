@@ -34,7 +34,6 @@
         <activity android:name="ChatActivity"
             android:exported="false"
             android:theme="@style/Theme.SeeMeet.TransparentStatusBar"
-            android:windowSoftInputMode="adjustUnspecified|adjustPan"/>
+            android:windowSoftInputMode="adjustResize" />
     </application>
-
 </manifest>

@@ -11,6 +11,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var backButton: ImageView
@@ -24,8 +25,9 @@ class LoginActivity : AppCompatActivity() {
     private var saveLoginData : Boolean = false
     private var email: String? = null
     private var pwd: String? = null
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -3,6 +3,8 @@ package com.example.kotlinproject
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.WindowManager
+import android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -31,7 +33,6 @@ class MainActivity : AppCompatActivity() {
         loginActivityButton = findViewById(R.id.loginActivityButton)
         loginActivityButton2 = findViewById(R.id.loginActivityButton2)
         signText = findViewById(R.id.signText)
-
 
         if (auth.currentUser != null) {
             val intent = Intent(this, SubActivity::class.java)
