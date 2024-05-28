@@ -35,6 +35,12 @@ class SignActivity : AppCompatActivity() {
         signButton = findViewById(R.id.signButton)
         loginButton = findViewById(R.id.loginButton)
 
+        if (auth.currentUser != null) {
+            val intent = Intent(this, SubActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+
         backButton.setOnClickListener {
             finish()
         }
@@ -46,7 +52,7 @@ class SignActivity : AppCompatActivity() {
         loginButton.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
-            finish()
+            //finish()
         }
     }
 
@@ -65,11 +71,12 @@ class SignActivity : AppCompatActivity() {
                             "UID" to it.uid,
                             "name" to name,
                             "email" to email,
-                            "password" to password
+                            "password" to password,
+                            "profileUrl" to ""
                         )
 
                         val colRef: CollectionReference = db.collection("user")
-                        val docRef: Task<DocumentReference> = colRef.add(userMap)
+                        val docRef: Task<Void> = colRef.document(it.uid).set(userMap)
 
                         docRef.addOnSuccessListener {
                             Toast.makeText(this, "회원가입 성공.", Toast.LENGTH_SHORT).show()

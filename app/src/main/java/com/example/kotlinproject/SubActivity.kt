@@ -26,6 +26,7 @@ class SubActivity : AppCompatActivity() {
     private lateinit var navigationView: NavigationView
     private lateinit var drawerMenuButton: ImageView
     private lateinit var logoutButton: TextView
+    private lateinit var profileButton: TextView
     private lateinit var editFindFriend: EditText
     private lateinit var chatContainer: LinearLayout
 
@@ -42,6 +43,7 @@ class SubActivity : AppCompatActivity() {
         navigationView = findViewById(R.id.navigation_view)
         drawerMenuButton = findViewById(R.id.drawer_menu)
         logoutButton = findViewById(R.id.logoutButton)
+        profileButton = findViewById(R.id.profileButton)
         editFindFriend = findViewById(R.id.editFindFriend)
         chatContainer = findViewById(R.id.chatContainer)
 
@@ -67,6 +69,11 @@ class SubActivity : AppCompatActivity() {
             finish()
         }
 
+        profileButton.setOnClickListener {
+            val intent = Intent(this, ProfileActivity::class.java)
+            startActivity(intent)
+        }
+
         editFindFriend.setOnEditorActionListener { v, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_SEND ||
                 (event?.action == KeyEvent.ACTION_DOWN && event.keyCode == KeyEvent.KEYCODE_ENTER)) {
@@ -74,11 +81,10 @@ class SubActivity : AppCompatActivity() {
                 val friendName: String = editFindFriend.text.toString()
 
                 if (friendName.isNotEmpty()) {
-                    db.collection("user")
-                        .whereEqualTo("UID", auth.currentUser?.uid)
+                    db.collection("user").document(auth.currentUser?.uid.toString())
                         .get()
-                        .addOnSuccessListener { querySnapshot->
-                            val myName: String = querySnapshot.documents[0].getString("name").toString()
+                        .addOnSuccessListener { document ->
+                            val myName: String = document.getString("name").toString()
                             if (myName != friendName) {
                                 searchFriend(friendName, myName)
                             } else {

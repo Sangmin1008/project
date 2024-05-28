@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.WindowManager
 import android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -56,7 +57,7 @@ class MainActivity : AppCompatActivity() {
             } else {
                 val intent = Intent(this, LoginActivity::class.java)
                 startActivity(intent)
-                finish()
+                //finish()
             }
         }
 

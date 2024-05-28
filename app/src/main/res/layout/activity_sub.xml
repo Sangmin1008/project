@@ -99,14 +99,25 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="44dp"
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:gravity="center|top">
+
+            <TextView
+                android:id="@+id/profileButton"
+                android:background="@drawable/button_main"
+                android:layout_width="160dp"
+                android:layout_height="60dp"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:text="회원정보"
+                android:textSize="15sp" />
 
             <TextView
                 android:id="@+id/logoutButton"
                 android:background="@drawable/button_main"
                 android:layout_width="160dp"
                 android:layout_height="60dp"
+                android:layout_marginTop="16dp"
                 android:gravity="center"
                 android:textColor="@color/white"
                 android:text="로그아웃"

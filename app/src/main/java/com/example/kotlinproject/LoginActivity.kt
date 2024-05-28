@@ -40,6 +40,12 @@ class LoginActivity : AppCompatActivity() {
         signButton = findViewById(R.id.signButton)
         loginRememberCheck = findViewById(R.id.loginRememberCheck)
 
+        if (auth.currentUser != null) {
+            val intent = Intent(this, SubActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+
         appData = getSharedPreferences("appData", MODE_PRIVATE)
         load()
 
@@ -60,7 +66,7 @@ class LoginActivity : AppCompatActivity() {
         signButton.setOnClickListener {
             val intent = Intent(this, SignActivity::class.java)
             startActivity(intent)
-            finish()
+            //finish()
         }
 
     }
