@@ -51,6 +51,12 @@ class ChatActivity: AppCompatActivity() {
         Profile.myName = myName
         friendNameText.text = friendName
 
+        db.collection("user").document(auth.currentUser!!.uid)
+            .get()
+            .addOnSuccessListener {querySnapshot->
+                Profile.myProfileUrl = querySnapshot.getString("profileUrl")
+            }
+
         roomID = if (friendUID > auth.uid.toString()) {
             friendUID + auth.uid.toString()
         } else {
@@ -88,13 +94,14 @@ class ChatActivity: AppCompatActivity() {
         val name = myName
         val message = messageText.text.toString()
         val time = "${Calendar.getInstance().get(Calendar.HOUR_OF_DAY)}:${Calendar.getInstance().get(Calendar.MINUTE)}"
+        val profileUrl = Profile.myProfileUrl.toString()
 
         if (message.isEmpty()) {
             Toast.makeText(this, "메시지를 입력해주세요", Toast.LENGTH_SHORT).show()
             return
         }
 
-        val item = Message(name, message, "", time)
+        val item = Message(name, message, profileUrl, time)
         chatRef.document("MSG_${System.currentTimeMillis()}").set(item)
 
         messageText.setText("")

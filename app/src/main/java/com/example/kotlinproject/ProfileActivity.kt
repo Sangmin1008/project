@@ -15,6 +15,7 @@ import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import com.bumptech.glide.Glide
 
 class ProfileActivity: AppCompatActivity() {
     private lateinit var backButton: ImageView
@@ -46,7 +47,9 @@ class ProfileActivity: AppCompatActivity() {
             .addOnSuccessListener { querySnapshot->
                 editName.setText(querySnapshot.getString("name").toString())
                 val uri = querySnapshot.getString("profileUrl")
-                if (uri!!.isNotEmpty()) profileImage.setImageURI(uri.toUri())
+                if (!uri.isNullOrEmpty()) {
+                    Glide.with(this).load(uri).into(profileImage)
+                }
                 //editPassword.setText(querySnapshot.documents[0].getString("password").toString())
             }
 
@@ -84,6 +87,7 @@ class ProfileActivity: AppCompatActivity() {
             val imageUri: Uri? = data.data
             if (imageUri != null) {
                 profileImage.setImageURI(imageUri)
+                profileUri = imageUri
             }
         }
     }
@@ -139,9 +143,8 @@ class ProfileActivity: AppCompatActivity() {
                 imgRef.downloadUrl.addOnSuccessListener { uri ->
                     Profile.myProfileUrl = uri.toString()
 
-                    val profileRef = db.collection("user")
-                    val profile = hashMapOf("profileUrl" to Profile.myProfileUrl)
-                    profileRef.document(auth.currentUser!!.uid).set(profile)
+                    val profileRef = db.collection("user").document(auth.currentUser!!.uid)
+                    profileRef.update("profileUrl", Profile.myProfileUrl)
                 }
             }
     }

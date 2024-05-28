@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 
 
 class MessageAdapter(private val context: Context, private val messageItems: ArrayList<Message>) : RecyclerView.Adapter<MessageAdapter.VH>() {
@@ -38,6 +39,7 @@ class MessageAdapter(private val context: Context, private val messageItems: Arr
         holder.name.text = item.name
         holder.message.text = item.message
         holder.time.text = item.time
+        Glide.with(context).load(item.profileUrl).into(holder.profileImage)
     }
 
     override fun getItemCount(): Int {
