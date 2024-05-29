@@ -1,6 +1,7 @@
 package com.example.kotlinproject
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
@@ -47,8 +48,6 @@ class ChatActivity: AppCompatActivity() {
 
         val friendName: String = intent.getStringExtra("friendName").toString()
         val friendUID: String = intent.getStringExtra("friendUID").toString()
-        myName = intent.getStringExtra("myName").toString()
-        Profile.myName = myName
         friendNameText.text = friendName
 
         db.collection("user").document(auth.currentUser!!.uid)
@@ -91,7 +90,7 @@ class ChatActivity: AppCompatActivity() {
     }
 
     private fun sendMessage() {
-        val name = myName
+        val name = Profile.myName.toString()
         val message = messageText.text.toString()
         val time = "${Calendar.getInstance().get(Calendar.HOUR_OF_DAY)}:${Calendar.getInstance().get(Calendar.MINUTE)}"
         val profileUrl = Profile.myProfileUrl.toString()

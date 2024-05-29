@@ -47,11 +47,6 @@ class SubActivity : AppCompatActivity() {
         editFindFriend = findViewById(R.id.editFindFriend)
         chatContainer = findViewById(R.id.chatContainer)
 
-        if (auth.currentUser == null) {
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
 
         drawerMenuButton.setOnClickListener {
             if (drawerLayout.isDrawerOpen(navigationView)) {
@@ -62,11 +57,7 @@ class SubActivity : AppCompatActivity() {
         }
 
         logoutButton.setOnClickListener {
-            auth.signOut()
-            Profile.myName = null
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-            finish()
+            logout()
         }
 
         profileButton.setOnClickListener {
@@ -84,9 +75,10 @@ class SubActivity : AppCompatActivity() {
                     db.collection("user").document(auth.currentUser?.uid.toString())
                         .get()
                         .addOnSuccessListener { document ->
-                            val myName: String = document.getString("name").toString()
-                            if (myName != friendName) {
-                                searchFriend(friendName, myName)
+                            Profile.myName = document.getString("name").toString()
+                            Profile.myProfileUrl = document.getString("profileUrl").toString()
+                            if (Profile.myName != friendName) {
+                                searchFriend(friendName)
                             } else {
                                 Toast.makeText(this, "자기 자신의 이름은 입력할 수 없습니다.", Toast.LENGTH_SHORT).show()
                             }
@@ -99,7 +91,16 @@ class SubActivity : AppCompatActivity() {
         }
     }
 
-    private fun searchFriend(friendName: String, myName: String) {
+
+    private fun logout() {
+        auth.signOut()
+        Profile.myName = null
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
+
+    private fun searchFriend(friendName: String) {
         db.collection("user")
             .whereEqualTo("name", friendName)
             .get()
@@ -112,7 +113,6 @@ class SubActivity : AppCompatActivity() {
                     val intent = Intent(this, ChatActivity::class.java)
                     intent.putExtra("friendName", friendName)
                     intent.putExtra("friendUID", friendUID)
-                    intent.putExtra("myName", myName)
                     startActivity(intent)
                 }
             }
