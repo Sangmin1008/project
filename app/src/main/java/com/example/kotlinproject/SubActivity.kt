@@ -1,5 +1,6 @@
 package com.example.kotlinproject
 
+import ChatRoom
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -13,10 +14,13 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.QuerySnapshot
 
@@ -28,12 +32,15 @@ class SubActivity : AppCompatActivity() {
     private lateinit var logoutButton: TextView
     private lateinit var profileButton: TextView
     private lateinit var editFindFriend: EditText
-    private lateinit var chatContainer: LinearLayout
+    private lateinit var chatContainer: RecyclerView
 
     private lateinit var friendUID: String
 
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val chatRooms = ArrayList<ChatRoom>()
+    private lateinit var chatRoomAdapter: ChatRoomAdapter
+    private lateinit var chatRoomsListener: ListenerRegistration
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,6 +53,15 @@ class SubActivity : AppCompatActivity() {
         profileButton = findViewById(R.id.profileButton)
         editFindFriend = findViewById(R.id.editFindFriend)
         chatContainer = findViewById(R.id.chatContainer)
+
+        chatRoomAdapter = ChatRoomAdapter(this, chatRooms, auth.currentUser!!.uid) { chatRoom ->
+            val intent = Intent(this, ChatActivity::class.java)
+            intent.putExtra("friendName", chatRoom.friendName)
+            intent.putExtra("friendUID", chatRoom.friendUID)
+            startActivity(intent)
+        }
+        chatContainer.layoutManager = LinearLayoutManager(this)
+        chatContainer.adapter = chatRoomAdapter
 
 
         drawerMenuButton.setOnClickListener {
@@ -89,8 +105,35 @@ class SubActivity : AppCompatActivity() {
                 false
             }
         }
+        loadChatRooms()
     }
 
+
+    private fun loadChatRooms() {
+        val chatRoomsRef = db.collection("chatRooms").document(auth.currentUser!!.uid).collection("rooms")
+        chatRoomsListener = chatRoomsRef.addSnapshotListener { snapshot, e ->
+            if (e != null) {
+                Toast.makeText(this, "실시간 업데이트 에러 발생: ${e.message}", Toast.LENGTH_SHORT).show()
+                return@addSnapshotListener
+            }
+
+            if (snapshot != null) {
+                chatRooms.clear()
+                for (document in snapshot.documents) {
+                    val chatRoom = document.toObject(ChatRoom::class.java)
+                    if (chatRoom != null) {
+                        chatRooms.add(chatRoom)
+                    }
+                }
+                chatRoomAdapter.notifyDataSetChanged()
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        chatRoomsListener.remove()
+    }
 
     private fun logout() {
         auth.signOut()

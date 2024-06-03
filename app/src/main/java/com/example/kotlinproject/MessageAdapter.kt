@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 
 
-class MessageAdapter(private val context: Context, private val messageItems: ArrayList<Message>) : RecyclerView.Adapter<MessageAdapter.VH>() {
+class MessageAdapter(private val context: Context, private val messageItems: ArrayList<Message>, private val currentUserUid: String) : RecyclerView.Adapter<MessageAdapter.VH>() {
 
     companion object {
         const val TYPE_MY = 0
@@ -18,7 +18,7 @@ class MessageAdapter(private val context: Context, private val messageItems: Arr
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (messageItems[position].name == Profile.myName) {
+        return if (messageItems[position].uid == currentUserUid) {
             TYPE_MY
         } else {
             TYPE_OTHER
@@ -39,7 +39,13 @@ class MessageAdapter(private val context: Context, private val messageItems: Arr
         holder.name.text = item.name
         holder.message.text = item.message
         holder.time.text = item.time
-        Glide.with(context).load(item.profileUrl).into(holder.profileImage)
+        if (!item.profileUrl.isNullOrEmpty()) {
+            Glide.with(context)
+                .load(item.profileUrl)
+                .into(holder.profileImage)
+        } else {
+            holder.profileImage.setImageResource(R.drawable.group_112)
+        }
     }
 
     override fun getItemCount(): Int {

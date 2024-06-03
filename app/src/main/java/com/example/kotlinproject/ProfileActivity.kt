@@ -21,9 +21,8 @@ class ProfileActivity: AppCompatActivity() {
     private lateinit var backButton: ImageView
     private lateinit var profileImage: ImageView
     private lateinit var editName: EditText
-    private lateinit var editPassword: EditText
-    private lateinit var currentPassword: EditText
     private lateinit var editProfileButton: TextView
+    private lateinit var changePassword: TextView
 
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
@@ -38,9 +37,8 @@ class ProfileActivity: AppCompatActivity() {
         backButton = findViewById(R.id.backButton)
         profileImage = findViewById(R.id.profileImage)
         editName = findViewById(R.id.editName)
-        editPassword = findViewById(R.id.editPassword)
-        currentPassword = findViewById(R.id.currentPassword)
         editProfileButton = findViewById(R.id.editProfileButton)
+        changePassword = findViewById(R.id.changePassword)
 
         db.collection("user").document(auth.currentUser!!.uid)
             .get()
@@ -63,13 +61,16 @@ class ProfileActivity: AppCompatActivity() {
             openGallery()
         }
 
-        editProfileButton.setOnClickListener {
-            val newPassword = editPassword.text.toString()
-            val newName = editName.text.toString()
-            val currentPwd = currentPassword.text.toString()
+        changePassword.setOnClickListener {
+            val intent = Intent(this, PasswordActivity::class.java)
+            startActivity(intent)
+        }
 
-            if (newPassword.isNotEmpty() && newName.isNotEmpty() && currentPwd.isNotEmpty()) {
-                updateProfile(newName, newPassword, currentPwd)
+        editProfileButton.setOnClickListener {
+            val newName = editName.text.toString()
+
+            if (newName.isNotEmpty()) {
+                updateProfile(newName)
             } else {
                 Toast.makeText(this, "입력을 다시 한 번 확인해주세요", Toast.LENGTH_SHORT).show()
             }
@@ -92,37 +93,24 @@ class ProfileActivity: AppCompatActivity() {
         }
     }
 
-    private fun updateProfile(newName: String, newPassword: String, currentPwd: String) {
+    private fun updateProfile(newName: String) {
         val user = auth.currentUser
         if (user != null) {
             val userRef = db.collection("user").document(user.uid)
             userRef.get()
                 .addOnSuccessListener { document ->
                     if (document != null && document.exists()) {
-                        val storedPassword = document.getString("password")
-                        if (storedPassword == currentPwd) {
-                            user.updatePassword(newPassword)
-                                .addOnCompleteListener { task ->
-                                    if (task.isSuccessful) {
-                                        userRef.update(mapOf(
-                                            "name" to newName,
-                                            "password" to newPassword
-                                        ))
-                                            .addOnSuccessListener {
-                                                uploadImage()
-                                                Toast.makeText(this, "회원정보가 성공적으로 수정되었습니다", Toast.LENGTH_SHORT).show()
-                                                finish()
-                                            }
-                                            .addOnFailureListener {
-                                                Toast.makeText(this, "Firestore 업데이트 에러발생", Toast.LENGTH_SHORT).show()
-                                            }
-                                    } else {
-                                        Toast.makeText(this, "비밀번호 업데이트 에러발생", Toast.LENGTH_SHORT).show()
-                                    }
-                                }
-                        } else {
-                            Toast.makeText(this, "현재 비밀번호가 일치하지 않습니다", Toast.LENGTH_SHORT).show()
-                        }
+                        userRef.update(mapOf(
+                            "name" to newName,
+                        ))
+                            .addOnSuccessListener {
+                                uploadImage()
+                                Toast.makeText(this, "회원정보가 성공적으로 수정되었습니다", Toast.LENGTH_SHORT).show()
+                                finish()
+                            }
+                            .addOnFailureListener {
+                                Toast.makeText(this, "Firestore 업데이트 에러발생", Toast.LENGTH_SHORT).show()
+                            }
                     }
                 }
                 .addOnFailureListener {

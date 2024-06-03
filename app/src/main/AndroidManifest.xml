@@ -39,5 +39,8 @@
         <activity android:name=".ProfileActivity"
             android:exported="false"
             android:theme="@style/Theme.SeeMeet.TransparentStatusBar" />
+        <activity android:name=".PasswordActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SeeMeet.TransparentStatusBar" />
     </application>
 </manifest>

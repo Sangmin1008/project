@@ -1,5 +1,6 @@
 package com.example.kotlinproject
 
+import ChatRoom
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -30,6 +31,8 @@ class ChatActivity: AppCompatActivity() {
     private val messageItems = ArrayList<Message>()
     private lateinit var messageAdapter: MessageAdapter
     private lateinit var myName: String
+    private lateinit var friendName: String
+    private lateinit var  friendUID: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,18 +45,19 @@ class ChatActivity: AppCompatActivity() {
         recyclerView = findViewById(R.id.recyclerView)
 
 
-        messageAdapter = MessageAdapter(this, messageItems)
+        messageAdapter = MessageAdapter(this, messageItems, auth.currentUser!!.uid)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = messageAdapter
 
-        val friendName: String = intent.getStringExtra("friendName").toString()
-        val friendUID: String = intent.getStringExtra("friendUID").toString()
+        friendName = intent.getStringExtra("friendName").toString()
+        friendUID = intent.getStringExtra("friendUID").toString()
         friendNameText.text = friendName
 
         db.collection("user").document(auth.currentUser!!.uid)
             .get()
             .addOnSuccessListener {querySnapshot->
                 Profile.myProfileUrl = querySnapshot.getString("profileUrl")
+                myName = querySnapshot.getString("name").toString()
             }
 
         roomID = if (friendUID > auth.uid.toString()) {
@@ -73,8 +77,9 @@ class ChatActivity: AppCompatActivity() {
                 val message = msg["message"].toString()
                 val profileUrl = msg["profileUrl"].toString()
                 val time = msg["time"].toString()
+                val uid = msg["uid"].toString()
 
-                messageItems.add(Message(name, message, profileUrl, time))
+                messageItems.add(Message(name, message, profileUrl, time, uid))
                 messageAdapter.notifyItemInserted(messageItems.size - 1)
                 recyclerView.scrollToPosition(messageItems.size - 1)
             }
@@ -92,20 +97,34 @@ class ChatActivity: AppCompatActivity() {
     private fun sendMessage() {
         val name = Profile.myName.toString()
         val message = messageText.text.toString()
-        val time = "${Calendar.getInstance().get(Calendar.HOUR_OF_DAY)}:${Calendar.getInstance().get(Calendar.MINUTE)}"
+        var time = "${Calendar.getInstance().get(Calendar.HOUR_OF_DAY)}:${Calendar.getInstance().get(Calendar.MINUTE)}"
+        if (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) < 10) {
+            time = "0$time"
+        }
+        if (Calendar.getInstance().get(Calendar.MINUTE) < 10) {
+            time = "${time}0"
+        }
         val profileUrl = Profile.myProfileUrl.toString()
+        val uid = auth.currentUser!!.uid
 
         if (message.isEmpty()) {
             Toast.makeText(this, "메시지를 입력해주세요", Toast.LENGTH_SHORT).show()
             return
         }
 
-        val item = Message(name, message, profileUrl, time)
+        val item = Message(name, message, profileUrl, time, uid)
         chatRef.document("MSG_${System.currentTimeMillis()}").set(item)
 
         messageText.setText("")
 
         val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
+
+        val myChatRoom = ChatRoom(roomID, friendNameText.text.toString(), friendUID, message, time)
+        val friendChatRoom = ChatRoom(roomID, myName, auth.currentUser!!.uid, message, time)
+        db.collection("chatRooms").document(auth.currentUser!!.uid)
+            .collection("rooms").document(roomID).set(myChatRoom)
+        db.collection("chatRooms").document(friendUID)
+            .collection("rooms").document(roomID).set(friendChatRoom)
     }
 }

@@ -26,7 +26,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginRight="44dp"
-            android:text="회원정보수정"
+            android:text="회원정보 수정"
             android:textColor="@color/white"
             android:textSize="20dp"
             android:textStyle="bold"
@@ -75,55 +75,6 @@
                 android:drawablePadding="6dp"
                 android:paddingStart="20dp"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="현재 비밀번호"
-                android:textSize="14sp"
-                android:textColor="#9EA3B2"/>
-
-            <EditText
-                android:id="@+id/currentPassword"
-                android:layout_marginTop="6dp"
-                android:layout_width="326dp"
-                android:layout_height="60dp"
-                android:layout_gravity="center"
-                android:hint="현재 비밀번호를 입력해 주세요"
-                android:inputType="textPassword"
-                android:text=""
-                android:textColorHint="#777C89"
-                android:textSize="14sp"
-                android:textColor="@color/white"
-                android:background="@drawable/edittext_selector"
-                android:drawableLeft="@drawable/password_selector"
-                android:drawablePadding="6dp"
-                android:paddingStart="20dp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="새 비밀번호"
-                android:textSize="14sp"
-                android:textColor="#9EA3B2"/>
-
-            <EditText
-                android:id="@+id/editPassword"
-                android:layout_marginTop="6dp"
-                android:layout_width="326dp"
-                android:layout_height="60dp"
-                android:layout_gravity="center"
-                android:hint="새 비밀번호를 입력해 주세요"
-                android:inputType="textPassword"
-                android:text=""
-                android:textColorHint="#777C89"
-                android:textSize="14sp"
-                android:textColor="@color/white"
-                android:background="@drawable/edittext_selector"
-                android:drawableLeft="@drawable/password_selector"
-                android:drawablePadding="6dp"
-                android:paddingStart="20dp"/>
 
             <TextView
                 android:id="@+id/editProfileButton"
@@ -138,6 +89,35 @@
                 android:textSize="15sp"  />
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:paddingBottom="20dp"
+                android:gravity="center"
+                android:text="비밀번호를 수정하실 건가요?"
+                android:textSize="15sp"
+                android:textColor="#9EA3B2"/>
+            <TextView
+                android:id="@+id/changePassword"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:paddingBottom="20dp"
+                android:gravity="center"
+                android:layout_marginLeft="6dp"
+                android:text="비밀번호 수정"
+                android:textSize="15sp"
+                android:textColor="@color/main"
+                android:textStyle="bold" />
+        </LinearLayout>
 
     </LinearLayout>
+
 </LinearLayout>
