@@ -58,7 +58,6 @@ class ChatRoomAdapter(
                 }
             }
             .addOnFailureListener {
-                // Handle the error, set default image or placeholder
                 holder.friendProfileImage.setImageResource(R.drawable.group_112)
             }
     }

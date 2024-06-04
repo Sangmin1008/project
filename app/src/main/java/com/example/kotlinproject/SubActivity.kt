@@ -56,7 +56,6 @@ class SubActivity : AppCompatActivity() {
 
         chatRoomAdapter = ChatRoomAdapter(this, chatRooms, auth.currentUser!!.uid) { chatRoom ->
             val intent = Intent(this, ChatActivity::class.java)
-            intent.putExtra("friendName", chatRoom.friendName)
             intent.putExtra("friendUID", chatRoom.friendUID)
             startActivity(intent)
         }

@@ -31,7 +31,7 @@ class ChatActivity: AppCompatActivity() {
     private val messageItems = ArrayList<Message>()
     private lateinit var messageAdapter: MessageAdapter
     private lateinit var myName: String
-    private lateinit var friendName: String
+    private var friendName: String = "로딩중..."
     private lateinit var  friendUID: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,15 +49,22 @@ class ChatActivity: AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = messageAdapter
 
-        friendName = intent.getStringExtra("friendName").toString()
+        //friendName = intent.getStringExtra("friendName").toString()
         friendUID = intent.getStringExtra("friendUID").toString()
-        friendNameText.text = friendName
+        db.collection("user").document(friendUID)
+            .get()
+            .addOnSuccessListener { querySnapshot->
+                friendName = querySnapshot.getString("name").toString()
+                friendNameText.text = friendName
+            }
+
 
         db.collection("user").document(auth.currentUser!!.uid)
             .get()
             .addOnSuccessListener {querySnapshot->
                 Profile.myProfileUrl = querySnapshot.getString("profileUrl")
                 myName = querySnapshot.getString("name").toString()
+                Profile.myName = myName
             }
 
         roomID = if (friendUID > auth.uid.toString()) {
@@ -102,7 +109,10 @@ class ChatActivity: AppCompatActivity() {
             time = "0$time"
         }
         if (Calendar.getInstance().get(Calendar.MINUTE) < 10) {
+            val lastChar = time.last()
+            time = time.substring(0, time.length - 1)
             time = "${time}0"
+            time = "$time$lastChar"
         }
         val profileUrl = Profile.myProfileUrl.toString()
         val uid = auth.currentUser!!.uid
@@ -120,7 +130,7 @@ class ChatActivity: AppCompatActivity() {
         val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
 
-        val myChatRoom = ChatRoom(roomID, friendNameText.text.toString(), friendUID, message, time)
+        val myChatRoom = ChatRoom(roomID, friendName, friendUID, message, time)
         val friendChatRoom = ChatRoom(roomID, myName, auth.currentUser!!.uid, message, time)
         db.collection("chatRooms").document(auth.currentUser!!.uid)
             .collection("rooms").document(roomID).set(myChatRoom)
